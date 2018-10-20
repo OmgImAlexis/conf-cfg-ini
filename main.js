@@ -1,4 +1,5 @@
 import autoBind from 'auto-bind';
+import unquote from 'unquote';
 
 /**
  * Default options
@@ -11,7 +12,13 @@ export const defaults = {
 	defaultValue: true,
 	assignIdentifier: "=",
 	commentIdentifiers: [";"],
-	trimLines: true
+	trimLines: true,
+	unquoteKeys: false,
+	quoteKeys: false,
+	unquoteValues: false,
+	quoteValues: false,
+	unquoteAttributes: false,
+	quoteAttributes: false
 };
 
 /**
@@ -72,38 +79,39 @@ export const decode = (data, options = {}) => {
 	};
 
 	const { trimLines, commentIdentifiers, sectionOpenIdentifier, sectionCloseIdentifier, assignIdentifier, defaultValue } = options;
+	const { unquoteAttributes, unquoteKeys, unquoteValues } = options;
 	const lineEnding = options.detectLineEnding ? detectLineEnding(data) : options.lineEnding;
 
 	let result = {};
 	let currentSection = undefined;
 	const lines = data.split(lineEnding);
-	for (var i = 0; i < lines.length; i++) {
+	for (let i = 0; i < lines.length; i++) {
 		const line = trimLines ? lines[i].trim() : lines[i];
 
 		if (line.length == 0 || stringBeginsWithOneOfTheseStrings(line, commentIdentifiers)) {
 			continue;
 		}
 
-		var sectionRegExp = new RegExp("^\\" + sectionOpenIdentifier + "(.*?)\\" + sectionCloseIdentifier + "$");
-		var newSection = line.match(sectionRegExp);
+		const sectionRegExp = new RegExp("^\\" + sectionOpenIdentifier + "(.*?)\\" + sectionCloseIdentifier + "$");
+		const newSection = line.match(sectionRegExp);
 		if (newSection !== null) {
-			currentSection = newSection[1];
+			// Unquote attribute
+			currentSection = unquoteAttributes ? unquote(newSection[1]) : newSection[1];
+
 			if (typeof result[currentSection] === 'undefined') {
 				result[currentSection] = {};
 			}
 			continue;
 		}
 
-		var assignPosition = line.indexOf(assignIdentifier);
-		var key = undefined;
-		var value = undefined;
-		if (assignPosition === -1) {
-			key = line;
-			value = defaultValue;
-		} else {
-			key = line.substr(0, assignPosition);
-			value = line.substr(assignPosition + assignIdentifier.length);
-		}
+		const assignPosition = line.indexOf(assignIdentifier);
+		let key = assignPosition === -1 ? line : line.substr(0, assignPosition);
+		let value = assignPosition === -1 ? defaultValue : line.substr(assignPosition + assignIdentifier.length);
+
+		// Unquote key and value
+		key = unquoteKeys ? unquote(key) : key;
+		value = unquoteValues ? unquote(value) : value;
+
 		if (typeof currentSection === 'undefined') {
 			result[key] = value;
 		} else {
@@ -126,7 +134,7 @@ export const encode = (object, options = {}) => {
 		...defaults,
 		...options
 	};
-	const { sectionCloseIdentifier, sectionOpenIdentifier, assignIdentifier } = options;
+	const { sectionCloseIdentifier, sectionOpenIdentifier, assignIdentifier, quoteAttributes, quoteKeys, quoteValues } = options;
 	const lineEnding = options.detectLineEnding ? detectLineEnding(options.lineEnding) : options.lineEnding;
 
 	let resultSections = "";
@@ -139,20 +147,20 @@ export const encode = (object, options = {}) => {
 				resultSections += lineEnding;
 			}
 			resultSections += sectionOpenIdentifier;
-			resultSections += sections[i];
+			resultSections += quoteAttributes ? `"${sections[i]}"` : sections[i];
 			resultSections += sectionCloseIdentifier;
 			resultSections += lineEnding;
 			const attributes = Object.keys(object[sections[i]]);
 			for (let j = 0; j < attributes.length; j++) {
-				resultSections += attributes[j];
+				resultSections += quoteKeys ? `"${attributes[j]}"` : attributes[j];
 				resultSections += assignIdentifier;
-				resultSections += object[sections[i]][attributes[j]];
+				resultSections += quoteValues ? `"${object[sections[i]][attributes[j]]}"` : object[sections[i]][attributes[j]];
 				resultSections += lineEnding;
 			}
 		} else {
-			resultAttributesWithoutSection += sections[i];
+			resultAttributesWithoutSection += quoteKeys ? `"${sections[i]}"` : sections[i];
 			resultAttributesWithoutSection += assignIdentifier;
-			resultAttributesWithoutSection += object[sections[i]];
+			resultAttributesWithoutSection += quoteValues ? `"${object[sections[i]]}"` : object[sections[i]];
 			resultAttributesWithoutSection += lineEnding;
 		}
 	}

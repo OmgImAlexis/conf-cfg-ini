@@ -8,7 +8,7 @@ test('returns a object', t => {
     });
 });
 
-test('should handle attributes without section', t => {
+test('handles attributes without section', t => {
     const result = decode("stray=foo\n[Section1]\na=b\n", {
         lineEnding: '\n'
     });
@@ -17,7 +17,50 @@ test('should handle attributes without section', t => {
     t.is(result.stray, 'foo');
 });
 
-test('should return object with same attributes', t => {
+test('handles attributes with quotes', t => {
+    const result = decode(`["Section1"]\na=b\n`, {
+        lineEnding: '\n',
+        unquoteAttributes: true
+    });
+    t.deepEqual(result.Section1.a, 'b');
+});
+
+test('handles keys with quotes', t => {
+    const result = decode(`[Section1]\n"a"=b\n`, {
+        lineEnding: '\n',
+        unquoteKeys: true
+    });
+    t.deepEqual(result.Section1.a, 'b');
+});
+
+test('handles values with quotes', t => {
+    const result = decode(`[Section1]\na="b"\n`, {
+        lineEnding: '\n',
+        unquoteValues: true
+    });
+    t.deepEqual(result.Section1.a, 'b');
+});
+
+test('handles attributes, keys and values with quotes', t => {
+    const result = decode(`["Section1"]\n"a"="b"\n`, {
+        lineEnding: '\n',
+        unquoteAttributes: true,
+        unquoteKeys: true,
+        unquoteValues: true
+    });
+    t.deepEqual(result.Section1.a, 'b');
+});
+
+test('handles values with quotes', t => {
+    const result = decode("stray=foo\n[Section1]\na=b\n", {
+        lineEnding: '\n'
+    });
+    t.true(Object.keys(result).includes('Section1'));
+    t.true(Object.keys(result).includes('stray'));
+    t.is(result.stray, 'foo');
+});
+
+test('returns object with same attributes', t => {
     const { decode } = new Config(";comment\n[SectionA]\nkey=value\n", {
         detectLineEnding: true
     });
