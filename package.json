@@ -1,18 +1,17 @@
 {
   "name": "conf-cfg-ini",
-  "version": "1.0.9",
-  "description": "encode and decode ini,conf,cfg files",
+  "version": "2.0.0",
+  "description": "Encode and decode ini, conf and cfg files",
   "author": "Rolf Loges",
   "license": "MIT",
-  "main": "conf-cfg-ini.js",
+  "main": "index.js",
+  "module": "main.js",
   "repository": "https://github.com/loge5/conf-cfg-ini",
-  "dependencies": {},
   "devDependencies": {
-    "chai": "^4.1.2",
-    "mocha": "^5.0.5"
+    "ava": "^0.25.0"
   },
   "scripts": {
-    "test": "mocha conf-cfg-ini.spec.js"
+    "test": "ava"
   },
   "keywords": [
     "ini",
@@ -20,5 +19,15 @@
     "cfg",
     "node",
     "config"
-  ]
+  ],
+  "dependencies": {
+    "auto-bind": "^1.2.1",
+    "esm": "^3.0.84"
+  },
+  "ava": {
+    "require": "esm",
+    "files": [
+      "test/**/*.spec.js"
+    ]
+  }
 }
