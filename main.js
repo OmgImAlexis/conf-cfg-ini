@@ -3,6 +3,22 @@ import unquote from 'unquote';
 
 /**
  * Default options
+ * 
+ * @namespace
+ * @property {Boolean} detectLineEnding Detect line ending
+ * @property {Boolean} LineEnding Line ending (break)
+ * @property {String} sectionOpenIdentifier First char of section line
+ * @property {String} sectionCloseIdentifier Last char of section line
+ * @property {*} defaultValue Default value for keys without value
+ * @property {String} assignIdentifier Character after key and before value
+ * @property {Array} commentIdentifiers Array of commentIdentifier strings
+ * @property {Boolean} trimLines Should lines be trimmed
+ * @property {Boolean} unquoteAttributes Remove surrounding quotes to attributes
+ * @property {Boolean} quoteAttributes Add surrounding quotes to attributes
+ * @property {Boolean} unquoteKeys Remove surrounding quotes to keys
+ * @property {Boolean} quoteKeys Add surrounding quotes to keys
+ * @property {Boolean} unquoteValues Remove surrounding quotes to values
+ * @property {Boolean} quoteValues Add surrounding quotes to values
  */
 export const defaults = {
 	detectLineEnding: false,
@@ -13,12 +29,12 @@ export const defaults = {
 	assignIdentifier: "=",
 	commentIdentifiers: [";"],
 	trimLines: true,
+	unquoteAttributes: false,
+	quoteAttributes: false,
 	unquoteKeys: false,
 	quoteKeys: false,
 	unquoteValues: false,
-	quoteValues: false,
-	unquoteAttributes: false,
-	quoteAttributes: false
+	quoteValues: false
 };
 
 /**
