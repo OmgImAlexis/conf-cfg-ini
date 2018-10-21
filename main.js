@@ -150,8 +150,7 @@ export const encode = (object, options = {}) => {
 		...defaults,
 		...options
 	};
-	const { sectionCloseIdentifier, sectionOpenIdentifier, assignIdentifier, quoteAttributes, quoteKeys, quoteValues } = options;
-	const lineEnding = options.detectLineEnding ? detectLineEnding(options.lineEnding) : options.lineEnding;
+	const { lineEnding, sectionCloseIdentifier, sectionOpenIdentifier, assignIdentifier, quoteAttributes, quoteKeys, quoteValues } = options;
 
 	let resultSections = "";
 	let resultAttributesWithoutSection = "";
