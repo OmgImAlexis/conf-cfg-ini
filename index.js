@@ -1,3 +1,2 @@
-/* eslint-disable-next-line no-global-assign */
-require = require('esm')(module);
-module.exports = require('./main.js').default;
+const _require = require('esm')(module);
+module.exports = _require('./main.js');
