@@ -75,15 +75,7 @@ will be decoded to:
 There are two ways to set options:
 ```javascript
 // Set options at initialization
-const config = new Config({
-  lineEnding: "\r\n",
-  sectionOpenIdentifier: '[',
-  sectionCloseIdentifier: ']',
-  defaultValue: true,
-  assignIdentifier: "=",
-  commentIdentifiers: [";"],
-  trimLines: true
-});
+const config = new Config(options);
 
 // or after initialization
 config.options.lineEnding = "\n";
