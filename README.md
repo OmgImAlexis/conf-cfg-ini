@@ -17,33 +17,40 @@ So here is an attempt to create a very flexible but easy to use parser.
 - Linebreak detection (windows, unix, mac)
 - Set custom identifiers for sections, comments and assignments
 - line trim is optional
+- quoting and unquoting attributes, keys and values is optional
 - set default value
-- tested with mocha+chai
+- tested with ava
 
 ### Installation ###
-```Shell
-npm install conf-cfg-ini
+```shell
+$ npm install conf-cfg-ini
 ```
 
 ### Usage ###
-```JavaScript
-//read config-String from file
-var fs = require('fs');
-var raw = fs.readFileSync('./test.ini');
+```javascript
+import fs from 'fs';
+import Config from 'conf-cfg-ini';
 
-var Config = require('conf-cfg-ini');
-var config = new Config();
-config.options.lineEnding = config.detectLineEnding(raw);
+const raw = fs.readFileSync('./test.ini');
 
-//decode to get a simple js object
-var configObject = config.decode(raw);
+const config  = new Config(raw, {
+  detectLineEnding: true
+});
 
-//encode to get a config-String
-var configString = config.encode(configObject);
+// decode to get a simple js object
+const configObject = config.decode(options);
+
+// encode to get a config-String
+const configString = config.encode({
+  SectionA: {
+    a: 1,
+    b: 2
+  }
+}, options);
 ```
 
 Example Config:
-```INI
+```ini
 [SectionA]
 a=1
 b=2
@@ -52,7 +59,7 @@ b=2
 bar=foo
 ```
 will be decoded to:
-```JSON
+```json
 {
   "SectionA": {
     "a": "1",
@@ -66,9 +73,9 @@ will be decoded to:
 
 ### Options ###
 There are two ways to set options:
-```JavaScript
-//set options at construction
-var config = new Config({
+```javascript
+// Set options at initialization
+const config = new Config({
   lineEnding: "\r\n",
   sectionOpenIdentifier: '[',
   sectionCloseIdentifier: ']',
@@ -78,7 +85,7 @@ var config = new Config({
   trimLines: true
 });
 
-//or after construction
+// or after initialization
 config.options.lineEnding = "\n";
 ```
 
@@ -90,4 +97,9 @@ config.options.lineEnding = "\n";
 | defaultValue             | true          | Default value for keys without value     |
 | assignIdentifier         | "="           | String after key and before value        |
 | commentIdentifiers       | [";"]         | List of commentIdentifiers (strings)     |
-| trimLines                | true          | Ignore space                             |
+| unquoteAttributes        | false         | Remove surrounding quotes to attributes  |
+| quoteAttributes          | false         | Add surrounding quotes to attributes     |
+| unquoteKeys              | false         | Remove surrounding quotes to keys        |
+| quoteKeys                | false         | Add surrounding quotes to keys           |
+| unquoteValues            | false         | Remove surrounding quotes to values      |
+| quoteValues              | false         | Add surrounding quotes to values         |
